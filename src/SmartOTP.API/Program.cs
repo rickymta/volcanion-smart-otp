@@ -10,6 +10,11 @@ using SmartOTP.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5001); // HTTP cho LAN
+});
+
 // Add services to the container
 builder.Services.AddControllers();
 

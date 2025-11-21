@@ -12,7 +12,7 @@ using SmartOTP.Infrastructure.Persistence;
 namespace SmartOTP.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251121064346_InitialCreate")]
+    [Migration("20251121125230_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
