@@ -1,339 +1,438 @@
-# Smart OTP Backend
+# SmartOTP - Two-Factor Authentication System
 
-A complete Smart OTP (One-Time Password) backend system similar to Microsoft Authenticator and Google Authenticator, built using .NET 9, Clean Architecture, Domain-Driven Design (DDD), CQRS, and MediatR patterns.
+[![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7+-DC382D)](https://redis.io/)
 
-## 🚀 Features
+Hệ thống xác thực hai yếu tố (2FA) hoàn chỉnh được xây dựng trên nền tảng .NET 9, áp dụng Clean Architecture, Domain-Driven Design (DDD), và CQRS pattern.
 
-### Authentication & Authorization
-- User registration and login with JWT tokens
-- Access token + Refresh token implementation
-- Password hashing with BCrypt
-- Email-based user accounts
+## 🌟 Tính Năng Nổi Bật
 
-### OTP Management
-- **TOTP (Time-based OTP)** - RFC 6238 compliant
-- **HOTP (Counter-based OTP)** - RFC 4226 compliant
-- Support for SHA1, SHA256, and SHA512 algorithms
-- 6 or 8 digit codes
-- Customizable time periods (default 30 seconds)
-- Multiple OTP accounts per user
+### Xác Thực & Bảo Mật
+- ✅ **JWT Authentication** - Access token + Refresh token
+- ✅ **BCrypt Password Hashing** - Mã hóa mật khẩu an toàn
+- ✅ **AES-256 Encryption** - Mã hóa OTP secrets
+- ✅ **Rate Limiting** - Giới hạn 5 lần thử trong 5 phút (Redis)
+- ✅ **Audit Logging** - Ghi log tất cả hoạt động quan trọng
 
-### Security
-- AES-256 encryption for OTP secrets at rest
-- JWT authentication middleware
-- Rate limiting (5 attempts per 5 minutes) using Redis
-- Audit logging for all critical operations
-- Soft delete pattern for data integrity
+### Quản Lý OTP
+- ✅ **TOTP** (Time-based OTP) - RFC 6238
+- ✅ **HOTP** (Counter-based OTP) - RFC 4226
+- ✅ **Nhiều thuật toán** - SHA1, SHA256, SHA512
+- ✅ **Tùy chỉnh** - 6/8 chữ số, thời gian tùy chỉnh (mặc định 30s)
+- ✅ **Multi-accounts** - Nhiều OTP account cho mỗi user
 
-### Architecture
-- **Clean Architecture** - Separation of concerns across layers
-- **Domain-Driven Design** - Rich domain models with business logic
-- **CQRS** - Command/Query separation
-- **MediatR** - Request/response pattern
-- **Repository Pattern** - Data access abstraction
-- **Unit of Work** - Transaction management
+### Kiến Trúc
+- ✅ **Clean Architecture** - Tách biệt rõ ràng các layer
+- ✅ **Domain-Driven Design** - Rich domain models
+- ✅ **CQRS Pattern** - Tách biệt Command/Query
+- ✅ **MediatR** - Request/response pipeline
+- ✅ **Repository Pattern** - Abstraction layer cho data access
+- ✅ **Unit of Work** - Quản lý transactions
 
-## 🏗️ Architecture
+## 🏗️ Cấu Trúc Dự Án
 
 ```
 SmartOTP/
 ├── src/
-│   ├── SmartOTP.Domain/          # Domain entities, value objects, events
-│   ├── SmartOTP.Application/     # Use cases, DTOs, interfaces
-│   ├── SmartOTP.Infrastructure/  # EF Core, Redis, services
-│   └── SmartOTP.API/             # Controllers, middleware, startup
-└── tests/
-    └── SmartOTP.Tests/           # Unit and integration tests
+│   ├── SmartOTP.Domain/          # Entities, Value Objects, Domain Events
+│   ├── SmartOTP.Application/     # Commands, Queries, DTOs, Validators
+│   ├── SmartOTP.Infrastructure/  # EF Core, Services, Repositories
+│   └── SmartOTP.API/             # Controllers, Middleware, Configuration
+├── tests/
+│   ├── SmartOTP.Domain.Tests/
+│   ├── SmartOTP.Application.Tests/
+│   ├── SmartOTP.Infrastructure.Tests/
+│   └── SmartOTP.API.Tests/
+├── docker-compose.yml
+└── SmartOTP.sln
 ```
 
-### Layers
+## 🛠️ Công Nghệ Sử Dụng
 
-1. **Domain Layer**
-   - Entities: `User`, `OtpAccount`, `AuditLog`
-   - Value Objects: `OtpCode`, `SecretKey`
-   - Domain Events
-   - Enums
+| Công nghệ | Phiên bản | Mục đích |
+|-----------|-----------|----------|
+| .NET | 9.0 | Framework chính |
+| ASP.NET Core | 9.0 | Web API |
+| Entity Framework Core | 9.0 | ORM |
+| PostgreSQL | 16+ | Database |
+| Redis | 7+ | Cache & Rate Limiting |
+| MediatR | 12+ | CQRS Implementation |
+| FluentValidation | 11+ | Request Validation |
+| BCrypt.Net | 0.1+ | Password Hashing |
+| xUnit | 2.6+ | Unit Testing |
 
-2. **Application Layer**
-   - Commands & Queries (CQRS)
-   - MediatR handlers
-   - DTOs
-   - FluentValidation validators
-   - Interface definitions
+## 📋 Yêu Cầu Hệ Thống
 
-3. **Infrastructure Layer**
-   - EF Core DbContext & Configurations
-   - Repository implementations
-   - PostgreSQL database
-   - Redis caching
-   - Encryption service
-   - OTP generation service
-   - JWT service
+- **.NET 9 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/9.0)
+- **PostgreSQL 16+** - [Download](https://www.postgresql.org/download/)
+- **Redis 7+** - [Download](https://redis.io/download/)
+- **Docker & Docker Compose** (Optional) - [Download](https://www.docker.com/products/docker-desktop)
 
-4. **Presentation Layer (API)**
-   - Controllers
-   - Middleware
-   - JWT authentication
-   - Swagger documentation
+## 🚀 Bắt Đầu Nhanh
 
-## 🛠️ Technology Stack
+### Option 1: Sử dụng Docker (Khuyến nghị)
 
-- **.NET 9** - Latest .NET framework
-- **ASP.NET Core Web API** - RESTful API
-- **Entity Framework Core 9** - ORM
-- **PostgreSQL** - Primary database
-- **Redis** - Caching and rate limiting
-- **MediatR** - CQRS implementation
-- **FluentValidation** - Request validation
-- **BCrypt.Net** - Password hashing
-- **JWT** - Authentication tokens
-- **Swagger/OpenAPI** - API documentation
-- **xUnit** - Unit testing
+```bash
+# Clone repository
+git clone https://github.com/yourusername/volcanion-smart-otp.git
+cd volcanion-smart-otp
 
-## 📋 Prerequisites
+# Khởi động services
+docker-compose up -d
 
-- .NET 9 SDK
-- PostgreSQL 16+
-- Redis 7+
-- Docker & Docker Compose (optional)
-
-## 🚀 Getting Started
-
-### Option 1: Using Docker Compose (Recommended)
-
-1. Generate encryption keys:
-```powershell
-# Generate 32-byte AES key
-$key = [System.Security.Cryptography.Aes]::Create().Key
-[System.Convert]::ToBase64String($key)
-
-# Generate 16-byte IV
-$iv = [System.Security.Cryptography.Aes]::Create().IV
-[System.Convert]::ToBase64String($iv)
+# API sẽ chạy tại http://localhost:5000
+# Swagger UI: http://localhost:5000/swagger
 ```
 
-2. Update `appsettings.json` with generated keys:
+### Option 2: Cài đặt thủ công
+
+#### 1. Cài đặt Dependencies
+
+```bash
+# Restore NuGet packages
+dotnet restore SmartOTP.sln
+```
+
+#### 2. Cấu hình Database
+
+```bash
+# Sửa connection string trong appsettings.json
+cd src/SmartOTP.API
+notepad appsettings.json
+
+# Connection string mẫu:
+# "DefaultConnection": "Host=localhost;Port=5432;Database=smartotp;Username=postgres;Password=your_password"
+```
+
+#### 3. Tạo Database
+
+```bash
+# Generate encryption keys
+.\generate-keys.ps1
+
+# Chạy migrations
+.\migrate.ps1
+```
+
+#### 4. Khởi động ứng dụng
+
+```bash
+# Chạy API
+cd src/SmartOTP.API
+dotnet run
+
+# Hoặc sử dụng script
+.\quick-start.ps1
+```
+
+API sẽ khởi động tại: **http://localhost:5000**  
+Swagger UI: **http://localhost:5000/swagger**
+
+## 📚 API Documentation
+
+### Authentication Endpoints
+
+#### Đăng ký
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+#### Đăng nhập
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+
+#### Refresh Token
+```http
+POST /api/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "your_refresh_token"
+}
+```
+
+### OTP Account Management
+
+#### Tạo OTP Account
+```http
+POST /api/otpaccounts
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "issuer": "MyApp",
+  "accountName": "user@example.com",
+  "type": "TOTP",
+  "algorithm": "SHA1",
+  "digits": 6,
+  "period": 30
+}
+```
+
+#### Lấy danh sách OTP Accounts
+```http
+GET /api/otpaccounts
+Authorization: Bearer {token}
+```
+
+#### Xóa OTP Account
+```http
+DELETE /api/otpaccounts/{accountId}
+Authorization: Bearer {token}
+```
+
+### OTP Operations
+
+#### Generate OTP Code
+```http
+GET /api/otp/generate/{accountId}
+Authorization: Bearer {token}
+```
+
+#### Verify OTP Code
+```http
+POST /api/otp/verify
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "accountId": "account-guid",
+  "code": "123456"
+}
+```
+
+## 🔐 Cấu Hình Bảo Mật
+
+### JWT Configuration
+
 ```json
 {
-  "Encryption": {
-    "Key": "YOUR_GENERATED_BASE64_KEY",
-    "IV": "YOUR_GENERATED_BASE64_IV"
+  "Jwt": {
+    "Secret": "YourSecretKeyAtLeast32CharactersLong",
+    "Issuer": "SmartOTP",
+    "Audience": "SmartOTP.API",
+    "AccessTokenExpirationMinutes": "60"
   }
 }
 ```
 
-3. Start all services:
-```bash
-docker-compose up -d
+### Encryption Configuration
+
+```json
+{
+  "Encryption": {
+    "Key": "base64_encoded_32_bytes_key",
+    "IV": "base64_encoded_16_bytes_iv"
+  }
+}
 ```
 
-4. API will be available at: `http://localhost:5000`
-5. Swagger UI: `http://localhost:5000/swagger`
+**Lưu ý:** Sử dụng script `generate-keys.ps1` để tạo keys an toàn.
 
-### Option 2: Manual Setup
+## 🧪 Testing
 
-1. **Install Dependencies**
 ```bash
-cd src/SmartOTP.API
-dotnet restore
+# Chạy tất cả tests
+dotnet test
+
+# Chạy tests với coverage
+dotnet test /p:CollectCoverage=true /p:CoverageReportFormat=opencover
+
+# Chạy tests cho specific project
+dotnet test tests/SmartOTP.Application.Tests/SmartOTP.Application.Tests.csproj
 ```
-
-2. **Start PostgreSQL**
-```bash
-docker run --name smartotp-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=smartotp -p 5432:5432 -d postgres:16-alpine
-```
-
-3. **Start Redis**
-```bash
-docker run --name smartotp-redis -p 6379:6379 -d redis:7-alpine
-```
-
-4. **Update Connection Strings** in `appsettings.json`
-
-5. **Apply Migrations**
-```bash
-cd src/SmartOTP.Infrastructure
-dotnet ef database update --startup-project ../SmartOTP.API
-```
-
-6. **Run the API**
-```bash
-cd ../SmartOTP.API
-dotnet run
-```
-
-## 📚 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/refresh-token` - Refresh access token
-
-### OTP Accounts
-- `GET /api/otpaccounts` - Get user's OTP accounts (requires auth)
-- `POST /api/otpaccounts` - Create new OTP account (requires auth)
-- `DELETE /api/otpaccounts/{id}` - Delete OTP account (requires auth)
-
-### OTP Operations
-- `GET /api/otp/generate/{accountId}` - Generate OTP code (requires auth)
-- `POST /api/otp/verify` - Verify OTP code (requires auth)
-
-## 🔐 Security Features
-
-### Encryption
-- OTP secrets encrypted using AES-256 before storage
-- Unique encryption key and IV per environment
-
-### Rate Limiting
-- Maximum 5 OTP verification attempts per 5 minutes per user
-- Implemented using Redis counters
-
-### JWT Authentication
-- Access tokens expire in 1 hour
-- Refresh tokens expire in 7 days
-- Secure token validation
-
-### Audit Logging
-- All user actions logged
-- Success/failure tracking
-- IP address and user agent capture
 
 ## 📊 Database Schema
 
 ### Users Table
-- Id, Email, PasswordHash, FirstName, LastName
-- IsEmailVerified, LastLoginAt
-- RefreshToken, RefreshTokenExpiryTime
-- CreatedAt, UpdatedAt, IsDeleted
+```sql
+- Id (UUID, PK)
+- Email (VARCHAR, Unique)
+- PasswordHash (VARCHAR)
+- FirstName (VARCHAR)
+- LastName (VARCHAR)
+- IsEmailVerified (BOOLEAN)
+- RefreshToken (VARCHAR, Nullable)
+- RefreshTokenExpiresAt (TIMESTAMP, Nullable)
+- CreatedAt (TIMESTAMP)
+- UpdatedAt (TIMESTAMP)
+- IsDeleted (BOOLEAN)
+```
 
 ### OtpAccounts Table
-- Id, UserId, Issuer, AccountName
-- Type (TOTP/HOTP), Algorithm, Digits, Period, Counter
-- EncryptedSecret, SecretCreatedAt
-- IconUrl, SortOrder
-- CreatedAt, UpdatedAt, IsDeleted
+```sql
+- Id (UUID, PK)
+- UserId (UUID, FK)
+- Issuer (VARCHAR)
+- AccountName (VARCHAR)
+- SecretEncryptedValue (TEXT)
+- Type (VARCHAR) -- TOTP/HOTP
+- Algorithm (VARCHAR) -- SHA1/SHA256/SHA512
+- Digits (INT) -- 6 or 8
+- Period (INT) -- For TOTP
+- Counter (BIGINT) -- For HOTP
+- SortOrder (INT)
+- CreatedAt (TIMESTAMP)
+- UpdatedAt (TIMESTAMP)
+- IsDeleted (BOOLEAN)
+```
 
 ### AuditLogs Table
-- Id, UserId, Action, IpAddress, UserAgent
-- Details, IsSuccess, ErrorMessage
-- CreatedAt
+```sql
+- Id (UUID, PK)
+- UserId (UUID, FK)
+- Action (VARCHAR)
+- Status (VARCHAR) -- Success/Failure
+- ErrorMessage (VARCHAR, Nullable)
+- Details (VARCHAR, Nullable)
+- CreatedAt (TIMESTAMP)
+```
 
-## 🧪 Testing
+## 🔄 Luồng Hoạt Động
 
-Run unit tests:
+### 1. Đăng ký và Kích hoạt 2FA
+
+```
+User → Register → Login → Create OTP Account → Scan QR Code → Verify OTP → 2FA Enabled
+```
+
+### 2. Đăng nhập với 2FA
+
+```
+User → Login → Enter OTP → Verify OTP → Success
+```
+
+### 3. Xác thực giao dịch
+
+```
+User → Perform Action → Request OTP → Verify OTP → Execute Action
+```
+
+## 🌐 Tích Hợp với Ứng Dụng Khác
+
+SmartOTP được thiết kế để dễ dàng tích hợp với bất kỳ hệ thống nào. Xem hướng dẫn chi tiết tại [2FA-INTEGRATION-GUIDE.md](2FA-INTEGRATION-GUIDE.md)
+
+### Ứng dụng Authenticator tương thích:
+- ✅ Google Authenticator
+- ✅ Microsoft Authenticator
+- ✅ Authy
+- ✅ 1Password
+- ✅ LastPass Authenticator
+- ✅ FreeOTP
+
+## 📱 QR Code Format
+
+```
+otpauth://totp/Issuer:AccountName?secret=BASE32SECRET&issuer=Issuer&algorithm=SHA1&digits=6&period=30
+```
+
+## 🔧 Scripts Hỗ Trợ
+
+| Script | Mô tả |
+|--------|-------|
+| `generate-keys.ps1` | Tạo JWT secret và Encryption keys |
+| `migrate.ps1` | Chạy EF Core migrations |
+| `quick-start.ps1` | Setup và khởi động ứng dụng nhanh |
+
+## 🐳 Docker Commands
+
 ```bash
-cd tests/SmartOTP.Tests
-dotnet test
+# Build images
+docker-compose build
+
+# Khởi động services
+docker-compose up -d
+
+# Xem logs
+docker-compose logs -f smartotp-api
+
+# Dừng services
+docker-compose down
+
+# Dừng và xóa volumes
+docker-compose down -v
 ```
 
-## 📖 Example Usage
+## 📈 Performance & Scalability
 
-### 1. Register User
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "SecurePass123!",
-    "firstName": "John",
-    "lastName": "Doe"
-  }'
-```
+- **Rate Limiting**: Redis-based, 5 attempts/5 minutes
+- **Caching**: Redis cache cho frequently accessed data
+- **Database Indexing**: Optimized indexes trên các bảng quan trọng
+- **Async/Await**: Non-blocking I/O operations
+- **Connection Pooling**: EF Core connection pooling
 
-### 2. Create OTP Account
-```bash
-curl -X POST http://localhost:5000/api/otpaccounts \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -d '{
-    "issuer": "GitHub",
-    "accountName": "john@example.com",
-    "type": "TOTP",
-    "algorithm": "SHA1",
-    "digits": 6,
-    "period": 30
-  }'
-```
+## 🔒 Security Features
 
-### 3. Generate OTP Code
-```bash
-curl -X GET http://localhost:5000/api/otp/generate/{accountId} \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
-
-### 4. Verify OTP Code
-```bash
-curl -X POST http://localhost:5000/api/otp/verify \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -d '{
-    "accountId": "ACCOUNT_GUID",
-    "code": "123456"
-  }'
-```
-
-## 🔧 Configuration
-
-### appsettings.json
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=smartotp;Username=postgres;Password=postgres",
-    "Redis": "localhost:6379"
-  },
-  "Jwt": {
-    "Secret": "Your-Secret-Key-At-Least-32-Characters",
-    "Issuer": "SmartOTP",
-    "Audience": "SmartOTP.API",
-    "AccessTokenExpirationMinutes": "60"
-  },
-  "Encryption": {
-    "Key": "BASE64_ENCODED_32_BYTE_KEY",
-    "IV": "BASE64_ENCODED_16_BYTE_IV"
-  }
-}
-```
-
-## 📝 TOTP & HOTP Algorithms
-
-### TOTP (Time-based OTP)
-- Based on current time
-- Default 30-second window
-- Supports time drift (±1 window)
-
-### HOTP (Counter-based OTP)
-- Based on incrementing counter
-- Counter stored and incremented after each generation
-- More suitable for hardware tokens
-
-Both support:
-- SHA1, SHA256, SHA512 algorithms
-- 6 or 8 digit codes
-- Base32 encoded secrets
+| Feature | Implementation |
+|---------|----------------|
+| Password Hashing | BCrypt với work factor 12 |
+| OTP Secret Encryption | AES-256-CBC |
+| JWT Signing | HMAC-SHA256 |
+| HTTPS | Khuyến nghị cho production |
+| CORS | Configurable allowed origins |
+| Rate Limiting | Redis-based với sliding window |
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please follow these steps:
+
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 License
+## 📝 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 References
+## 👥 Authors
 
-- [RFC 6238 - TOTP](https://datatracker.ietf.org/doc/html/rfc6238)
-- [RFC 4226 - HOTP](https://datatracker.ietf.org/doc/html/rfc4226)
-- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
+- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
 
-## 📞 Support
+## 🙏 Acknowledgments
 
-For issues and questions, please open an issue on GitHub.
+- RFC 6238 - TOTP Specification
+- RFC 4226 - HOTP Specification
+- Clean Architecture by Robert C. Martin
+- Domain-Driven Design by Eric Evans
+
+## 📧 Support
+
+Nếu bạn gặp vấn đề hoặc có câu hỏi:
+
+- 🐛 [Report Bug](https://github.com/yourusername/volcanion-smart-otp/issues)
+- 💡 [Request Feature](https://github.com/yourusername/volcanion-smart-otp/issues)
+- 📧 Email: support@example.com
+
+## 🗺️ Roadmap
+
+- [ ] Email verification
+- [ ] SMS-based OTP
+- [ ] Backup codes generation
+- [ ] Account recovery mechanism
+- [ ] Admin dashboard
+- [ ] Multi-language support
+- [ ] Mobile SDK (iOS/Android)
+- [ ] WebAuthn/FIDO2 support
 
 ---
 
-Built with ❤️ using .NET 9 and Clean Architecture principles.
+**Made with ❤️ using .NET 9 and Clean Architecture**
